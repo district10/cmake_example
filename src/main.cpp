@@ -8,6 +8,19 @@ int add(int i, int j) {
 }
 
 namespace py = pybind11;
+using rvp = py::return_value_policy;
+
+struct Beed {
+};
+struct Pod {
+    Beed &beed() {
+        return _beed;
+    }
+  private:
+    Beed _beed;
+};
+
+namespace py = pybind11;
 
 PYBIND11_MODULE(cmake_example, m) {
     m.doc() = R"pbdoc(
@@ -34,6 +47,9 @@ PYBIND11_MODULE(cmake_example, m) {
 
         Some other explanation about the subtract function.
     )pbdoc");
+
+    py::class_<Beed>(m, "Beed").def(py::init<>());
+    py::class_<Pod>(m, "Pod").def(py::init<>()).def("beed", &Pod::beed, rvp::reference_internal);
 
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
